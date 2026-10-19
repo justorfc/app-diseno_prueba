@@ -9,7 +9,7 @@ from typing import IO
 
 import numpy as np
 import pandas as pd
-from scipy.stats import studentized_range
+from scipy.stats import f, studentized_range
 from statsmodels.formula.api import ols
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from statsmodels.stats.anova import anova_lm
@@ -217,6 +217,30 @@ def coeficiente_variacion(
 
     # Paso 3: CV = sqrt(CME) / media general * 100; expresa error relativo.
     return float(np.sqrt(cme) / media_general * 100)
+
+
+def f_critica(alfa: float, gl_tratamientos: float, gl_error: float) -> float:
+    """Calcula el valor crítico de F para los grados de libertad del DCA.
+
+    Args:
+        alfa: Nivel de significancia, entre 0 y 1.
+        gl_tratamientos: Grados de libertad de los tratamientos.
+        gl_error: Grados de libertad del error experimental.
+
+    Returns:
+        Cuantil crítico de la distribución F.
+
+    Raises:
+        ValueError: Si alfa o los grados de libertad no son válidos.
+    """
+    # Paso 1: los grados de libertad deben ser positivos para definir la distribución F.
+    if not 0 < alfa < 1:
+        raise ValueError("alfa debe estar entre 0 y 1.")
+    if gl_tratamientos <= 0 or gl_error <= 0:
+        raise ValueError("Los grados de libertad deben ser positivos.")
+
+    # Paso 2: F crítica = F inversa(1-alfa; gl tratamientos, gl error).
+    return float(f.ppf(1 - alfa, gl_tratamientos, gl_error))
 
 
 def tukey(

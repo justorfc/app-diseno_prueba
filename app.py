@@ -1,4 +1,4 @@
-AUTOR = "Escribe aquí tu nombre"
+AUTOR = "Justo Fuentes"
 
 import streamlit as st
 
